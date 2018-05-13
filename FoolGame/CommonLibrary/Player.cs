@@ -8,7 +8,13 @@ namespace CommonLibrary
 {
     public class Player
     {
-        public int Id { get; set; }
+        public int Id { get; private set; }
         public List<Card> Hand { get; set; }
+
+        public Player(int id)
+        {
+            Id = id;
+            Hand = new List<Card>();
+        }
     }
 }

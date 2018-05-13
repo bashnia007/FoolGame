@@ -37,5 +37,21 @@ namespace Logic
             }
             return queue;
         }
+
+        public static void ProvideCards(List<Player> players, Queue<Card> deck, short cardsToHand)
+        {
+            foreach (var player in players)
+            {
+                for (int i = 0; i < cardsToHand; i++)
+                {
+                    player.Hand.Add(deck.Dequeue());
+                }
+            }
+        }
+
+        public static Card ProvideTrump(Queue<Card> deck)
+        {
+            return deck.Dequeue();
+        }
     }
 }
