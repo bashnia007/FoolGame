@@ -16,5 +16,10 @@ namespace CommonLibrary
             Id = id;
             Hand = new List<Card>();
         }
+
+        public List<Card> SelectCards()
+        {
+            return new List<Card>();
+        }
     }
 }

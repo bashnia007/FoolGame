@@ -49,9 +49,27 @@ namespace Logic
             }
         }
 
-        public static Card ProvideTrump(Queue<Card> deck)
+        public static Suit ProvideTrump(Queue<Card> deck)
         {
-            return deck.Dequeue();
+            return deck.Peek().Suit;
+        }
+
+        public static List<Player> SelectOrderOfPlayers(List<Player> players, Suit trump)
+        {
+            var result = new List<Player>();
+            var firstPlayer = players.OrderBy(
+                player => 
+                player.Hand.Where(card => card.Suit == trump).DefaultIfEmpty().Min(card => card.Nominal)).FirstOrDefault();
+            
+            if(firstPlayer == null) throw new Exception("There are no trumps on hands!");
+
+            var startPosition = players.IndexOf(firstPlayer);
+            for (int i = startPosition; i < startPosition + players.Count; i++)
+            {
+                result.Add(players[i% players.Count]);
+            }
+
+            return result;
         }
     }
 }

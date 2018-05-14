@@ -52,12 +52,61 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void ProvideTrump_RemoveCard()
+        public void ProvideTrump_NotRemoveCard()
         {
             var cards = Logic.InitialSettings.ShuffleCards();
             var cardsCount = cards.Count;
             var trump = Logic.InitialSettings.ProvideTrump(cards);
-            Assert.AreEqual(cardsCount - 1, cards.Count);
+            Assert.AreEqual(cardsCount, cards.Count);
+        }
+
+        [TestMethod]
+        public void SelectOrderOfPlayers_CorrectOreder()
+        {
+            var hand1 = new List<Card>
+            {
+                new Card(Suit.Clubs, Nominal.Nine),
+                new Card(Suit.Clubs, Nominal.Queen),
+                new Card(Suit.Diamonds, Nominal.Ace),
+                new Card(Suit.Hearts, Nominal.Jake),
+            };
+            var hand2 = new List<Card>
+            {
+                new Card(Suit.Clubs, Nominal.Six),
+                new Card(Suit.Spades, Nominal.Queen),
+                new Card(Suit.Spades, Nominal.Ace),
+                new Card(Suit.Hearts, Nominal.Six),
+            };
+            var hand3 = new List<Card>
+            {
+                new Card(Suit.Hearts, Nominal.Queen),
+                new Card(Suit.Clubs, Nominal.King),
+                new Card(Suit.Diamonds, Nominal.Ten),
+                new Card(Suit.Hearts, Nominal.Ten),
+            };
+            var players = new List<Player>
+            {
+                new Player(1)
+                {
+                    Hand = hand1
+                },
+                new Player(2)
+                {
+                    Hand = hand2
+                },
+                new Player(3)
+                {
+                    Hand = hand3
+                }
+            };
+            var trump = Suit.Clubs;
+
+            var rankedList = Logic.InitialSettings.SelectOrderOfPlayers(players, trump);
+
+            var expected = "231";
+            var actual = string.Join("", rankedList.Select(player => player.Id));
+
+            Assert.AreEqual(expected, actual);
         }
     }
 }
