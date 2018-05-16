@@ -9,25 +9,55 @@ namespace Logic
 {
     public class GameManager
     {
-        public Table Table { get; set; }
         public List<Player> Players { get; set; }
 
-        public Player ActivePlayer { get; set; }
-        public Player PassivePlayer { get; set; }
+        public Player ActivePlayer { get; private set; }
+        public Player PassivePlayer { get; private set; }
 
         public void Init(List<Player> players)
         {
-            var table = new Table();
-            table.Deck = InitialSettings.ShuffleCards();
+            Table.Deck = InitialSettings.ShuffleCards();
             Players = players;
-            InitialSettings.ProvideCards(Players, table.Deck, 6);
-            table.Trump = InitialSettings.ProvideTrump(table.Deck);
+            InitialSettings.ProvideCards(Players, Table.Deck, 6);
+            Table.Trump = InitialSettings.ProvideTrump(Table.Deck);
 
-            Players = InitialSettings.SelectOrderOfPlayers(players, table.Trump);
+            Players = InitialSettings.SelectOrderOfPlayers(players, Table.Trump);
         }
 
         public void GameProcess()
         {
+            while (true)
+            {
+                SelectRoles();
+                Turn();
+                
+
+            }
+        }
+
+        /// <summary>
+        /// Установить ходящего и бьющегося игроков
+        /// </summary>
+        private void SelectRoles()
+        {
+            
+        }
+
+        private void Turn()
+        {
+            var attackCards = ActivePlayer.SelectCards();
+            var defenderDecision = PassivePlayer.SelectPlayerAction(attackCards);
+            switch (defenderDecision.ActionType)
+            {
+                case ActionType.Defend:
+                    Defend();
+                    break;
+            }
+        }
+
+        private void Defend()
+        {
+            
         }
     }
 }

@@ -21,5 +21,14 @@ namespace CommonLibrary
         {
             return new List<Card>();
         }
+
+        public PlayerAction SelectPlayerAction(List<Card> attackCards)
+        {
+            return new DefendAction()
+            {
+                ActionType = ActionType.Defend,
+                CardsPairs = new List<CardsPair>()
+            };
+        } 
     }
 }
