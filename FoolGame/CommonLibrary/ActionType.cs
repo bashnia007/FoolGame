@@ -3,6 +3,14 @@
     public enum ActionType
     {
         /// <summary>
+        /// Атаковать
+        /// </summary>
+        Attack,
+        /// <summary>
+        /// Подбросить
+        /// </summary>
+        Add,
+        /// <summary>
         /// Побиться
         /// </summary>
         Defend,
@@ -13,6 +21,10 @@
         /// <summary>
         /// Забрать
         /// </summary>
-        Pass
+        Pass,
+        /// <summary>
+        /// Ничего
+        /// </summary>
+        None
     }
 }

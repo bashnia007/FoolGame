@@ -22,8 +22,12 @@ namespace CommonLibrary
             return new List<Card>();
         }
 
-        public PlayerAction SelectPlayerAction(List<Card> attackCards)
+        public PlayerAction SelectPlayerAction(bool isAttack = false)
         {
+            if (isAttack)
+            {
+                
+            }
             return new DefendAction()
             {
                 ActionType = ActionType.Defend,

@@ -41,8 +41,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionType.cs" />
+    <Compile Include="AddAction.cs" />
+    <Compile Include="AttackAction.cs" />
     <Compile Include="Card.cs" />
     <Compile Include="CardsPair.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="DefendAction.cs" />
     <Compile Include="Nominal.cs" />
     <Compile Include="Player.cs" />

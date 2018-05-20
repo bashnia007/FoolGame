@@ -13,6 +13,7 @@ namespace Logic
 
         public Player ActivePlayer { get; private set; }
         public Player PassivePlayer { get; private set; }
+        public Player NeighbourPlayer { get; private set; }
 
         public void Init(List<Player> players)
         {
@@ -29,7 +30,7 @@ namespace Logic
             while (true)
             {
                 SelectRoles();
-                Turn();
+                Turn(ActivePlayer);
                 
 
             }
@@ -43,21 +44,41 @@ namespace Logic
             
         }
 
-        private void Turn()
+        private void Turn(Player attackPlayer)
         {
-            var attackCards = ActivePlayer.SelectCards();
-            var defenderDecision = PassivePlayer.SelectPlayerAction(attackCards);
+            var attackCards = attackPlayer.SelectCards();
+            Table.OpenedCards.AddRange(attackCards);
+            var defenderDecision = PassivePlayer.SelectPlayerAction();
             switch (defenderDecision.ActionType)
             {
                 case ActionType.Defend:
-                    Defend();
+                    Defend((DefendAction)defenderDecision);
                     break;
+                case ActionType.Pass:
+                    return;
+                case ActionType.Transfer:
+                    return;
+            }
+            if(Table.OpenedCards.Count >= Constants.MaxCardsOnTheTable) return;
+
+            var attackerDecision = ActivePlayer.SelectPlayerAction(isAttack: true);
+            if (attackerDecision.ActionType == ActionType.Add)
+            {
+                Turn(ActivePlayer);
+            }
+            else
+            {
+                var neighbourDecision = NeighbourPlayer.SelectPlayerAction(isAttack: true);
+                if (neighbourDecision.ActionType == ActionType.Add)
+                {
+                    Turn(NeighbourPlayer);
+                }
             }
         }
 
-        private void Defend()
+        private void Defend(DefendAction defendActions)
         {
-            
+            Table.OpenedCards.AddRange(defendActions.CardsPairs.Select(cp => cp.DefendCard));
         }
     }
 }
