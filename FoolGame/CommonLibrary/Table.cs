@@ -21,5 +21,10 @@ namespace CommonLibrary
         /// Открытые карты на столе
         /// </summary>
         public static List<Card> OpenedCards { get; set; }
+
+        /// <summary>
+        /// Не побитые карты на столе
+        /// </summary>
+        public static List<Card> NotCoveredCards { get; set; }
     }
 }

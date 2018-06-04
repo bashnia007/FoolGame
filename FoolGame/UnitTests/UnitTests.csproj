@@ -57,6 +57,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="InitialSettingsUnitTests.cs" />
+    <Compile Include="LogicUnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

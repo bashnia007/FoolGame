@@ -38,7 +38,7 @@ namespace Logic
             return queue;
         }
 
-        public static void ProvideCards(List<Player> players, Queue<Card> deck, short cardsToHand)
+        public static void ProvideCards(List<IPlayer> players, Queue<Card> deck, short cardsToHand)
         {
             foreach (var player in players)
             {
@@ -54,12 +54,14 @@ namespace Logic
             return deck.Peek().Suit;
         }
 
-        public static List<Player> SelectOrderOfPlayers(List<Player> players, Suit trump)
+        public static List<IPlayer> SelectOrderOfPlayers(List<IPlayer> players, Suit trump)
         {
-            var result = new List<Player>();
-            var firstPlayer = players.OrderBy(
+            var result = new List<IPlayer>();
+            var playersWithTrumps = players.Where(pl => pl.Hand.Any(c => c.Suit == trump)).ToList();
+            
+            var firstPlayer = playersWithTrumps.OrderBy(
                 player => 
-                player.Hand.Where(card => card.Suit == trump).DefaultIfEmpty().Min(card => card.Nominal)).FirstOrDefault();
+                player.Hand.Where(card => card.Suit == trump).Min(card => card.Nominal)).FirstOrDefault();
             
             if(firstPlayer == null) throw new Exception("There are no trumps on hands!");
 

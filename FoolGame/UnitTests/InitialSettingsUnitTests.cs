@@ -65,14 +65,14 @@ namespace UnitTests
         {
             var hand1 = new List<Card>
             {
-                new Card(Suit.Clubs, Nominal.Nine),
+                new Card(Suit.Diamonds, Nominal.Six),
                 new Card(Suit.Clubs, Nominal.Queen),
                 new Card(Suit.Diamonds, Nominal.Ace),
                 new Card(Suit.Hearts, Nominal.Jake),
             };
             var hand2 = new List<Card>
             {
-                new Card(Suit.Clubs, Nominal.Six),
+                new Card(Suit.Clubs, Nominal.Nine),
                 new Card(Suit.Spades, Nominal.Queen),
                 new Card(Suit.Spades, Nominal.Ace),
                 new Card(Suit.Hearts, Nominal.Six),
@@ -80,7 +80,7 @@ namespace UnitTests
             var hand3 = new List<Card>
             {
                 new Card(Suit.Hearts, Nominal.Queen),
-                new Card(Suit.Clubs, Nominal.King),
+                new Card(Suit.Diamonds, Nominal.King),
                 new Card(Suit.Diamonds, Nominal.Ten),
                 new Card(Suit.Hearts, Nominal.Ten),
             };

@@ -10,6 +10,7 @@ namespace CommonLibrary
     {
         public int Id { get; private set; }
         public List<Card> Hand { get; set; }
+        
 
         public Player(int id)
         {
