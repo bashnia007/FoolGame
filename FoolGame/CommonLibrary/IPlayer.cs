@@ -6,8 +6,10 @@ namespace CommonLibrary
     {
         int Id { get; set; }
         List<Card> Hand { get; set; }
+        
+        IPlayerAction SelectPlayerAction(bool isAttack = false);
 
-        List<Card> SelectCards();
-        PlayerAction SelectPlayerAction(bool isAttack = false);
+        AttackAction Attack();
+
     }
 }

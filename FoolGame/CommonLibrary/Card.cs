@@ -10,5 +10,10 @@
             Suit = suit;
             Nominal = nominal;
         }
+
+        public override string ToString()
+        {
+            return $"{Suit.Print()}{Nominal}";
+        }
     }
 }

@@ -49,9 +49,10 @@
     <Compile Include="DefendAction.cs" />
     <Compile Include="IPlayer.cs" />
     <Compile Include="Nominal.cs" />
+    <Compile Include="NoneAction.cs" />
     <Compile Include="PassAction.cs" />
     <Compile Include="Player.cs" />
-    <Compile Include="PlayerAction.cs" />
+    <Compile Include="IPlayerAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Suit.cs" />
     <Compile Include="SuitExtension.cs" />

@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace CommonLibrary
 {
-    public class TransferAction : PlayerAction
+    public class TransferAction : IPlayerAction
     {
+        public IPlayer Player { get; set; }
+        public ActionType ActionType { get; }
     }
 }

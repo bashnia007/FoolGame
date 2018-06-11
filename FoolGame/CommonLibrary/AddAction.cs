@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CommonLibrary
 {
-    public class AddAction : PlayerAction
+    public class AddAction : IPlayerAction
     {
         public List<Card> AddedCards { get; }
 
@@ -15,13 +15,22 @@ namespace CommonLibrary
             if (cards.TrueForAll(c => Table.OpenedCards.Select(o => o.Nominal).Contains(c.Nominal)))
             {
                 AddedCards.AddRange(cards);
+
+                foreach (var card in cards)
+                {
+                    Player.Hand.Remove(card);
+                }
                 return true;
             }
             return false;
         }
-        public AddAction()
+        public AddAction(IPlayer player)
         {
             AddedCards = new List<Card>();
+            Player = player;
         }
+
+        public IPlayer Player { get; set; }
+        public ActionType ActionType => ActionType.Add;
     }
 }

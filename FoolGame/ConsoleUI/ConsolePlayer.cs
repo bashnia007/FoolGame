@@ -17,25 +17,102 @@ namespace ConsoleUI
             Id = id;
             Hand = new List<Card>();
         }
-
-        public List<Card> SelectCards()
+        
+        public IPlayerAction SelectPlayerAction(bool isAttack = false)
         {
-            PrintHand();
-            return ReadSelection();
-        }
-
-        public PlayerAction SelectPlayerAction(bool isAttack = false)
-        {
+            PrintTable();
             PrintHand();
             if (!isAttack)
             {
                 var action = ReadAction();
                 return action;
             }
-            throw new NotImplementedException();
+            else
+            {
+                var action = ReadAttackAction();
+                return action;
+            }
+        }
+        
+        public DefendAction Defend()
+        {
+            var defendAction = new DefendAction(this);
+            Console.WriteLine("Select cards to defend");
+            foreach (var notCoveredCard in Table.NotCoveredCards)
+            {
+                Console.WriteLine(notCoveredCard);
+                var input = Console.ReadLine();
+                int res;
+                if (int.TryParse(input, out res) && res > 0)
+                {
+                    defendAction.AddPair(new CardsPair
+                    {
+                        DefendCard = Hand[res - 1],
+                        AttackCard = notCoveredCard
+                    });
+                }
+            }
+            return defendAction;
         }
 
-        private PlayerAction ReadAction()
+        public AttackAction Attack()
+        {
+            var attackAction = new AttackAction(this);
+            PrintHand();
+            Console.WriteLine("Select cards to attack");
+            var input = Console.ReadLine();
+            if (string.IsNullOrEmpty(input))
+            {
+                Console.WriteLine("Incorrect input");
+                return Attack();
+            }
+            var selected = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var result = new List<Card>();
+            foreach (var s in selected)
+            {
+                int res;
+                if (int.TryParse(s, out res) && res > 0 && res <= Hand.Count)
+                {
+                    result.Add(Hand[res - 1]);
+                }
+            }
+            if (!attackAction.AddCards(result))
+            {
+                Console.WriteLine("You can't select these cards");
+                return Attack();
+            }
+            return attackAction;
+        }
+
+        public AddAction Add()
+        {
+            var addAction = new AddAction(this);
+            PrintHand();
+            Console.WriteLine("Select cards to attack");
+            var input = Console.ReadLine();
+            if (string.IsNullOrEmpty(input))
+            {
+                return addAction;
+            }
+            var selected = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var result = new List<Card>();
+            foreach (var s in selected)
+            {
+                int res;
+                if (int.TryParse(s, out res) && res > 0 && res <= Hand.Count)
+                {
+                    result.Add(Hand[res - 1]);
+                }
+            }
+            if (!addAction.AddCards(result))
+            {
+                Console.WriteLine("You can't select these cards");
+                return Add();
+            }
+            return addAction;
+        }
+        
+        private IPlayerAction ReadAction()
         {
             Console.WriteLine("Выберите действие");
             Console.WriteLine("1:Defend");
@@ -45,11 +122,27 @@ namespace ConsoleUI
             switch (result)
             {
                 case "1":
-                    return new DefendAction();
+                    return Defend();
                 case "2":
                     return new TransferAction();
                 case "3":
-                    return new PassAction();
+                    return new PassAction(this);
+            }
+            throw new NotImplementedException();
+        }
+
+        private IPlayerAction ReadAttackAction()
+        {
+            Console.WriteLine("Select action:");
+            Console.WriteLine("1:Add");
+            Console.WriteLine("2:None");
+            var result = Console.ReadLine();
+            switch (result)
+            {
+                case "1":
+                    return Add();
+                case "2":
+                    return new NoneAction();
             }
             throw new NotImplementedException();
         }
@@ -64,25 +157,23 @@ namespace ConsoleUI
             Console.WriteLine();
         }
 
-        private List<Card> ReadSelection()
+        private void PrintTable()
         {
-            var input = Console.ReadLine();
-            if (string.IsNullOrEmpty(input))
+            Console.Clear();
+            Console.WriteLine("Trump is " + Table.Trump);
+            Console.WriteLine("Opened cards:");
+            foreach (var openedCard in Table.OpenedCards)
             {
-                Console.WriteLine("Incorrect input");
-                return ReadSelection();
+                Console.WriteLine(openedCard);
             }
-            var selected = input.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-            var result = new List<Card>();
-            foreach (var s in selected)
+            Console.WriteLine();
+            Console.WriteLine("Not covered cards:");
+            foreach (var notCoveredCard in Table.NotCoveredCards)
             {
-                int res;
-                if (int.TryParse(s, out res) && res > 0 && res <= Hand.Count)
-                {
-                    result.Add(Hand[res-1]);
-                }
+                Console.WriteLine(notCoveredCard);
             }
-            return result;
+            Console.WriteLine();
         }
+        
     }
 }

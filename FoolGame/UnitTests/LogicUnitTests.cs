@@ -19,8 +19,8 @@ namespace UnitTests
                 new Player(3)
             };
 
-            gameManager.Init(players);
-            gameManager.SelectRoles();
+            //gameManager.Init(players);
+            //gameManager.SelectRoles();
         }
     }
 }

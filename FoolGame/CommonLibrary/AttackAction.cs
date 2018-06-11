@@ -6,22 +6,30 @@ using System.Threading.Tasks;
 
 namespace CommonLibrary
 {
-    public class AttackAction : PlayerAction
+    public class AttackAction : IPlayerAction
     {
         public List<Card> AttackCards { get; }
 
         public bool AddCards(List<Card> cards)
         {
-            if (cards.GroupBy(c => c.Nominal).Count() == cards.Count)
+            if (cards.GroupBy(c => c.Nominal).Count() == 1)
             {
                 AttackCards.AddRange(cards);
+                foreach (var card in cards)
+                {
+                    Player.Hand.Remove(card);
+                }
                 return true;
             }
             return false;
         }
-        public AttackAction()
+        public AttackAction(IPlayer player)
         {
             AttackCards = new List<Card>();
+            Player = player;
         }
+
+        public IPlayer Player { get; set; }
+        public ActionType ActionType => ActionType.Attack;
     }
 }

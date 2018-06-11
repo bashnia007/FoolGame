@@ -23,17 +23,9 @@ namespace CommonLibrary
             return new List<Card>();
         }
 
-        public PlayerAction SelectPlayerAction(bool isAttack = false)
+        public IPlayerAction SelectPlayerAction(bool isAttack = false)
         {
-            if (isAttack)
-            {
-                
-            }
-            return new DefendAction()
-            {
-                ActionType = ActionType.Defend,
-                CardsPairs = new List<CardsPair>()
-            };
+            return null;
         } 
     }
 }

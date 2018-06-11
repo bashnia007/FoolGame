@@ -9,5 +9,6 @@ namespace CommonLibrary
     public class Constants
     {
         public const int MaxCardsOnTheTable = 6;
+        public const int MaxCardsInTheHand = 6;
     }
 }
