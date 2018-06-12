@@ -12,7 +12,10 @@ namespace CommonLibrary
 
         public bool AddCards(List<Card> cards)
         {
-            if (cards.TrueForAll(c => Table.OpenedCards.Select(o => o.Nominal).Contains(c.Nominal)))
+            if (cards.TrueForAll(c => Table.OpenedCards.Select(o => o.Nominal).Contains(c.Nominal)) &&
+                Table.VisiblePlayers.First(p => p.Role == PlayerRole.Passive).CardsCount >= cards.Count &&
+                ((!Table.IsFirstRound && Table.AttackCardsCount + cards.Count <= Constants.MaxCardsOnTheTable) ||
+                (Table.IsFirstRound && Table.AttackCardsCount + cards.Count <= Constants.MaxCardOnTheTableForFirstRound)))
             {
                 AddedCards.AddRange(cards);
 

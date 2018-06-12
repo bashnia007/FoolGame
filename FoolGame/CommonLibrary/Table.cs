@@ -12,10 +12,15 @@ namespace CommonLibrary
         /// Колода карт
         /// </summary>
         public static Queue<Card> Deck { get; set; }
+
         /// <summary>
         /// Козырь
         /// </summary>
-        public static Suit Trump { get; set; }
+        public static Suit Trump => TrumpCard.Suit;
+        /// <summary>
+        /// Карта-козырь, последняя в колоде
+        /// </summary>
+        public static Card TrumpCard { get; set; }
 
         /// <summary>
         /// Открытые карты на столе
@@ -26,5 +31,16 @@ namespace CommonLibrary
         /// Не побитые карты на столе
         /// </summary>
         public static List<Card> NotCoveredCards { get; set; }
+
+        /// <summary>
+        /// Видимая всем информация о игроках
+        /// </summary>
+        public static List<VisiblePlayer> VisiblePlayers { get; set; }
+
+        public static int AttackCardsCount { get; set; }
+
+        public static bool IsFirstRound { get; set; }
+
+        public static bool TransferPossible { get; set; }
     }
 }

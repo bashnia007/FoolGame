@@ -53,11 +53,13 @@
     <Compile Include="PassAction.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="IPlayerAction.cs" />
+    <Compile Include="PlayerRole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Suit.cs" />
     <Compile Include="SuitExtension.cs" />
     <Compile Include="Table.cs" />
     <Compile Include="TransferAction.cs" />
+    <Compile Include="VisiblePlayer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -23,9 +23,11 @@ namespace Logic
             Players = players;
             Table.Deck = InitialSettings.ShuffleCards();
             InitialSettings.ProvideCards(Players, Table.Deck, 6);
-            Table.Trump = InitialSettings.ProvideTrump(Table.Deck);
+            Table.TrumpCard = InitialSettings.ProvideTrump(Table.Deck);
             Table.OpenedCards = new List<Card>();
             Table.NotCoveredCards = new List<Card>();
+            Table.IsFirstRound = true;
+            Table.VisiblePlayers = InitialSettings.FillVisiblePlayers(players);
 
             Players = InitialSettings.SelectOrderOfPlayers(players, Table.Trump);
 
@@ -36,12 +38,16 @@ namespace Logic
         {
             while (!CheckGameOver())
             {
+                Table.AttackCardsCount = 0;
+                Table.OpenedCards = new List<Card>();
+                Table.NotCoveredCards = new List<Card>();
+
                 SelectRoles();
                 Turn();
 
                 RestoreCards();
-                Table.OpenedCards = new List<Card>();
-                Table.NotCoveredCards = new List<Card>();
+
+                Table.IsFirstRound = false;
             }
         }
 
@@ -56,6 +62,7 @@ namespace Logic
                 ActivePlayer = Players[0];
                 PassivePlayer = Players[1];
                 NeighbourPlayer = Players[2%Players.Count];
+                UpdateVisiblePlayers();
                 return;
             }
             int passiveIndex = Players.IndexOf(PassivePlayer);
@@ -72,13 +79,16 @@ namespace Logic
                 PassivePlayer = Players[(neighbourIndex + 1) % Players.Count];
                 NeighbourPlayer = Players[(neighbourIndex + 2) % Players.Count];
             }
+            UpdateVisiblePlayers();
         }
         
         public void Turn()
         {
             var isAdd = true;
+            _isSuccessfullyDefended = true;
             var attackAction = ActivePlayer.Attack();
             AddAttackCards((attackAction).AttackCards);
+            Table.TransferPossible = true;
             while (isAdd)
             {
                 var defenderDecision = PassivePlayer.SelectPlayerAction();
@@ -94,6 +104,7 @@ namespace Logic
                         Transfer(defenderDecision as TransferAction);
                         continue;
                 }
+                if (IsDefenderWon()) return;
                 var attackerAction = ActivePlayer.SelectPlayerAction(isAttack: true);
                 switch (attackerAction.ActionType)
                 {
@@ -125,6 +136,9 @@ namespace Logic
             transferAction.Player.Hand.Remove(transferAction.TransferCard);
             Table.NotCoveredCards.Add(transferAction.TransferCard);
             Table.OpenedCards.Add(transferAction.TransferCard);
+            Table.AttackCardsCount++;
+
+            UpdateVisiblePlayers();
         }
 
         private bool AddNeighbour(IPlayer player)
@@ -143,6 +157,7 @@ namespace Logic
         
         private void Defend(DefendAction defendActions)
         {
+            Table.TransferPossible = false;
             defendActions.Player.Hand.RemoveAll(c => defendActions.CardsPairs.Select(def => def.DefendCard).Contains(c));
             Table.OpenedCards.AddRange(defendActions.CardsPairs.Select(cp => cp.DefendCard));
             Table.NotCoveredCards = new List<Card>();
@@ -150,6 +165,7 @@ namespace Logic
 
         private void AddAttackCards(List<Card> attackCards)
         {
+            Table.AttackCardsCount += attackCards.Count;
             foreach (var attackCard in attackCards)
             {
                 Table.NotCoveredCards.Add(attackCard);
@@ -170,26 +186,38 @@ namespace Logic
 
         private void RestoreCardsToPlayer(IPlayer player)
         {
-            if(player.Hand.Count >= Constants.MaxCardsInTheHand) return;
-            var cardsToAdd = Math.Min(Table.Deck.Count, Constants.MaxCardsInTheHand - player.Hand.Count);
+            if(player.Hand.Count >= Constants.NessecaryCardsInTheHand) return;
+            var cardsToAdd = Math.Min(Table.Deck.Count, Constants.NessecaryCardsInTheHand - player.Hand.Count);
             for (int i = 0; i < cardsToAdd; i++)
             {
                 player.Hand.Add(Table.Deck.Dequeue());
             }
         }
 
+        private bool IsDefenderWon()
+        {
+            if (PassivePlayer.Hand.Count == 0)
+            {
+                PassivePlayer.WinAction();
+                return true;
+            }
+            return false;
+        }
+
         private bool CheckGameOver()
         {
             if (Table.Deck.Count == 0)
             {
+                List<IPlayer> toRemove = new List<IPlayer>();
                 foreach (var player in Players)
                 {
                     if (player.Hand.Count == 0)
                     {
                         player.WinAction();
-                        Players.Remove(player);
+                        toRemove.Add(player);
                     }
                 }
+                Players.RemoveAll(p => toRemove.Contains(p));
             }
             if (Players.Count == 1)
             {
@@ -197,6 +225,17 @@ namespace Logic
                 return true;
             }
             return false;
+        }
+
+        private void UpdateVisiblePlayers()
+        {
+            Table.VisiblePlayers.First(p => p.Id == ActivePlayer.Id).Role = PlayerRole.Active;
+            Table.VisiblePlayers.First(p => p.Id == PassivePlayer.Id).Role = PlayerRole.Passive;
+            Table.VisiblePlayers.First(p => p.Id == NeighbourPlayer.Id).Role = PlayerRole.Neighbour;
+            foreach (var player in Table.VisiblePlayers.Where(p => p.Id != ActivePlayer.Id && p.Id != NeighbourPlayer.Id && p.Id != PassivePlayer.Id))
+            {
+                player.Role = PlayerRole.None;
+            }
         }
     }
 }

@@ -19,8 +19,10 @@ namespace CommonLibrary
 
         public bool SelectTransferCard(Card card)
         {
+            var passivePlayer = Table.VisiblePlayers.First(p => p.Role == PlayerRole.Passive);
             if (Table.OpenedCards.Count != Table.NotCoveredCards.Count ||
-                Table.NotCoveredCards[0].Nominal != card.Nominal) return false;
+                Table.NotCoveredCards[0].Nominal != card.Nominal ||
+                passivePlayer.CardsCount < Table.NotCoveredCards.Count + 1) return false;
             TransferCard = card;
             return true;
         }

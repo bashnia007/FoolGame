@@ -49,9 +49,11 @@ namespace Logic
             }
         }
 
-        public static Suit ProvideTrump(Queue<Card> deck)
+        public static Card ProvideTrump(Queue<Card> deck)
         {
-            return deck.Peek().Suit;
+            var trumpCard = deck.Dequeue();
+            deck.Enqueue(trumpCard);
+            return trumpCard;
         }
 
         public static List<IPlayer> SelectOrderOfPlayers(List<IPlayer> players, Suit trump)
@@ -72,6 +74,16 @@ namespace Logic
             }
 
             return result;
+        }
+
+        public static List<VisiblePlayer> FillVisiblePlayers(List<IPlayer> players)
+        {
+            var visiblePlayers = new List<VisiblePlayer>();
+            foreach (var player in players)
+            {
+                visiblePlayers.Add(new VisiblePlayer(player));
+            }
+            return visiblePlayers;
         }
     }
 }

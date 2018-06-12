@@ -109,9 +109,9 @@ namespace ConsoleUI
             foreach (var s in selected)
             {
                 int res;
-                if (int.TryParse(s, out res) && res > 0 && res <= Hand.Count)
+                if (int.TryParse(s, out res))
                 {
-                    if (res <= 0) return null;
+                    if (res <= 0 && res <= Hand.Count) return null;
                     result.Add(Hand[res - 1]);
                 }
             }
@@ -153,7 +153,7 @@ namespace ConsoleUI
         {
             Console.WriteLine("Выберите действие");
             Console.WriteLine("1:Defend");
-            Console.WriteLine("2:Transfer");
+            if(Table.TransferPossible) Console.WriteLine("2:Transfer");
             Console.WriteLine("3:Pass");
             var result = Console.ReadLine();
             switch (result)
@@ -161,7 +161,9 @@ namespace ConsoleUI
                 case "1":
                     return Defend();
                 case "2":
+                    if(Table.TransferPossible)
                     return Transfer();
+                    throw new NotImplementedException();
                 case "3":
                     return new PassAction(this);
             }
