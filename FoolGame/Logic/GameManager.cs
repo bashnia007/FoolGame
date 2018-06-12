@@ -65,21 +65,30 @@ namespace Logic
                 UpdateVisiblePlayers();
                 return;
             }
-            int passiveIndex = Players.IndexOf(PassivePlayer);
-            int neighbourIndex = Players.IndexOf(NeighbourPlayer);
-            if (_isSuccessfullyDefended)
-            {
-                ActivePlayer = Players[passiveIndex % Players.Count];
-                PassivePlayer = Players[neighbourIndex % Players.Count];
-                NeighbourPlayer = Players[(Players.IndexOf(PassivePlayer) + 1)%Players.Count];
-            }
-            else
-            {
-                ActivePlayer = Players[neighbourIndex % Players.Count];
-                PassivePlayer = Players[(neighbourIndex + 1) % Players.Count];
-                NeighbourPlayer = Players[(neighbourIndex + 2) % Players.Count];
-            }
+            UpdateRoles(_isSuccessfullyDefended ? PassivePlayer : NeighbourPlayer);
             UpdateVisiblePlayers();
+        }
+
+        private void UpdateRoles(IPlayer startFrom)
+        {
+            int active = FindNextActiveUser(Players.IndexOf(startFrom));
+            ActivePlayer = Players[active % Players.Count];
+
+            active = FindNextActiveUser(Players.IndexOf(ActivePlayer) + 1);
+            PassivePlayer = Players[active % Players.Count];
+
+            active = FindNextActiveUser(Players.IndexOf(PassivePlayer) + 1);
+            NeighbourPlayer = Players[active % Players.Count];
+        }
+
+        private int FindNextActiveUser(int startIndex)
+        {
+            int i = 0;
+            while (Players[(startIndex + i) % Players.Count].Hand.Count == 0)
+            {
+                i++;
+            }
+            return startIndex+i;
         }
         
         public void Turn()
@@ -112,7 +121,7 @@ namespace Logic
                         AddAttackCards(((AddAction)attackerAction).AddedCards);
                         break;
                     case ActionType.None:
-                        isAdd = AddNeighbour(NeighbourPlayer);
+                        isAdd = ActivePlayer.Id != NeighbourPlayer.Id && AddNeighbour(NeighbourPlayer);
                         break;
                 }
             }
@@ -206,22 +215,9 @@ namespace Logic
 
         private bool CheckGameOver()
         {
-            if (Table.Deck.Count == 0)
+            if (Table.Deck.Count == 0 && Players.Where(p => p.Hand.Count > 0).ToList().Count == 1)
             {
-                List<IPlayer> toRemove = new List<IPlayer>();
-                foreach (var player in Players)
-                {
-                    if (player.Hand.Count == 0)
-                    {
-                        player.WinAction();
-                        toRemove.Add(player);
-                    }
-                }
-                Players.RemoveAll(p => toRemove.Contains(p));
-            }
-            if (Players.Count == 1)
-            {
-                Players[0].LoseAction();
+                Players.First(p => p.Hand.Count > 0).LoseAction();
                 return true;
             }
             return false;

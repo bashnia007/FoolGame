@@ -12,7 +12,7 @@ namespace CommonLibrary
 
         public bool AddCards(List<Card> cards)
         {
-            if (cards.GroupBy(c => c.Nominal).Count() == 1)
+            if (cards.GroupBy(c => c.Nominal).Count() == 1 && cards.Count <= Table.VisiblePlayers.First(p => p.Role == PlayerRole.Passive).CardsCount)
             {
                 AttackCards.AddRange(cards);
                 foreach (var card in cards)

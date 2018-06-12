@@ -161,13 +161,11 @@ namespace ConsoleUI
                 case "1":
                     return Defend();
                 case "2":
-                    if(Table.TransferPossible)
-                    return Transfer();
-                    throw new NotImplementedException();
+                    return Table.TransferPossible ? Transfer() : ReadAction();
                 case "3":
                     return new PassAction(this);
             }
-            throw new NotImplementedException();
+            return ReadAction();
         }
 
         private IPlayerAction ReadAttackAction()
