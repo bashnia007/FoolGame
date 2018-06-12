@@ -25,11 +25,13 @@ namespace ConsoleUI
             if (!isAttack)
             {
                 var action = ReadAction();
+                if (action == null) return SelectPlayerAction(false);
                 return action;
             }
             else
             {
                 var action = ReadAttackAction();
+                if (action == null) return SelectPlayerAction(true);
                 return action;
             }
         }
@@ -37,19 +39,27 @@ namespace ConsoleUI
         public DefendAction Defend()
         {
             var defendAction = new DefendAction(this);
-            Console.WriteLine("Select cards to defend");
+            Console.WriteLine("Select cards to defend. Press 0 to select another action");
             foreach (var notCoveredCard in Table.NotCoveredCards)
             {
                 Console.WriteLine(notCoveredCard);
                 var input = Console.ReadLine();
                 int res;
-                if (int.TryParse(input, out res) && res > 0)
+                while (!int.TryParse(input, out res))
                 {
-                    defendAction.AddPair(new CardsPair
-                    {
-                        DefendCard = Hand[res - 1],
-                        AttackCard = notCoveredCard
-                    });
+                    Console.WriteLine("Incorrect input, please reneter");
+                    input = Console.ReadLine();
+                }
+                if (res <= 0) return null;
+                
+                if (!defendAction.AddPair(new CardsPair
+                {
+                    DefendCard = Hand[res - 1],
+                    AttackCard = notCoveredCard
+                }))
+                {
+                    Console.WriteLine("You can't select this card. Please try again");
+                    return Defend();
                 }
             }
             return defendAction;
@@ -88,7 +98,7 @@ namespace ConsoleUI
         {
             var addAction = new AddAction(this);
             PrintHand();
-            Console.WriteLine("Select cards to attack");
+            Console.WriteLine("Select cards to attack. Press 0 to select another action");
             var input = Console.ReadLine();
             if (string.IsNullOrEmpty(input))
             {
@@ -101,6 +111,7 @@ namespace ConsoleUI
                 int res;
                 if (int.TryParse(s, out res) && res > 0 && res <= Hand.Count)
                 {
+                    if (res <= 0) return null;
                     result.Add(Hand[res - 1]);
                 }
             }
@@ -110,6 +121,32 @@ namespace ConsoleUI
                 return Add();
             }
             return addAction;
+        }
+
+        public TransferAction Transfer()
+        {
+            var transferAction = new TransferAction(this);
+            Console.WriteLine("Select card for transfer. Press 0 to select another action");
+            var input = Console.ReadLine();
+            if (string.IsNullOrEmpty(input))
+            {
+                return transferAction;
+            }
+
+            int selected;
+            while (!int.TryParse(input, out selected))
+            {
+                Console.WriteLine("Incorrect input, please reneter");
+            }
+            if (selected <= 0) return null;
+
+
+            if (!transferAction.SelectTransferCard(Hand[selected - 1]))
+            {
+                Console.WriteLine("You can select this card. Please try again");
+                return Transfer();
+            }
+            return transferAction;
         }
         
         private IPlayerAction ReadAction()
@@ -124,7 +161,7 @@ namespace ConsoleUI
                 case "1":
                     return Defend();
                 case "2":
-                    return new TransferAction();
+                    return Transfer();
                 case "3":
                     return new PassAction(this);
             }
@@ -174,6 +211,16 @@ namespace ConsoleUI
             }
             Console.WriteLine();
         }
-        
+
+
+        public void WinAction()
+        {
+            Console.WriteLine($"Player {Id}, you are WINNER!");
+        }
+
+        public void LoseAction()
+        {
+            Console.WriteLine($"Player {Id}, you are LOSER!");
+        }
     }
 }

@@ -34,12 +34,14 @@ namespace Logic
 
         public void GameProcess()
         {
-            while (true)
+            while (!CheckGameOver())
             {
                 SelectRoles();
                 Turn();
 
                 RestoreCards();
+                Table.OpenedCards = new List<Card>();
+                Table.NotCoveredCards = new List<Card>();
             }
         }
 
@@ -71,51 +73,13 @@ namespace Logic
                 NeighbourPlayer = Players[(neighbourIndex + 2) % Players.Count];
             }
         }
-
-        public void Turn(IPlayer attackPlayer)
-        {
-            Table.NotCoveredCards = new List<Card>();
-            var attackAction = attackPlayer.Attack();
-            var attackCards = attackAction.AttackCards;
-            foreach (var attackCard in attackCards)
-            {
-                Table.NotCoveredCards.Add(attackCard);
-            }
-            Table.OpenedCards.AddRange(attackCards);
-            var defenderDecision = PassivePlayer.SelectPlayerAction();
-            switch (defenderDecision.ActionType)
-            {
-                case ActionType.Defend:
-                    Defend(defenderDecision as DefendAction);
-                    break;
-                case ActionType.Pass:
-                    return;
-                case ActionType.Transfer:
-                    return;
-            }
-            if(Table.OpenedCards.Count >= Constants.MaxCardsOnTheTable) return;
-
-            var attackerDecision = ActivePlayer.SelectPlayerAction(isAttack: true);
-            if (attackerDecision.ActionType == ActionType.Add)
-            {
-                Turn(ActivePlayer);
-            }
-            else
-            {
-                var neighbourDecision = NeighbourPlayer.SelectPlayerAction(isAttack: true);
-                if (neighbourDecision.ActionType == ActionType.Add)
-                {
-                    Turn(NeighbourPlayer);
-                }
-            }
-        }
-
+        
         public void Turn()
         {
             var isAdd = true;
             var attackAction = ActivePlayer.Attack();
             AddAttackCards((attackAction).AttackCards);
-            while (Table.OpenedCards.Count <= Constants.MaxCardsOnTheTable && isAdd)
+            while (isAdd)
             {
                 var defenderDecision = PassivePlayer.SelectPlayerAction();
                 switch (defenderDecision.ActionType)
@@ -124,10 +88,11 @@ namespace Logic
                         Defend(defenderDecision as DefendAction);
                         break;
                     case ActionType.Pass:
-                        _isSuccessfullyDefended = false;
+                        Pass();
                         return;
                     case ActionType.Transfer:
-                        return;
+                        Transfer(defenderDecision as TransferAction);
+                        continue;
                 }
                 var attackerAction = ActivePlayer.SelectPlayerAction(isAttack: true);
                 switch (attackerAction.ActionType)
@@ -140,6 +105,26 @@ namespace Logic
                         break;
                 }
             }
+        }
+
+        private void Pass()
+        {
+            _isSuccessfullyDefended = false;
+            Table.NotCoveredCards = new List<Card>();
+            Table.OpenedCards = new List<Card>();
+        }
+
+        private void Transfer(TransferAction transferAction)
+        {
+            int passiveIndex = Players.IndexOf(PassivePlayer);
+            int neighbourIndex = Players.IndexOf(NeighbourPlayer);
+            ActivePlayer = Players[passiveIndex % Players.Count];
+            PassivePlayer = Players[neighbourIndex % Players.Count];
+            NeighbourPlayer = Players[(Players.IndexOf(PassivePlayer) + 1) % Players.Count];
+
+            transferAction.Player.Hand.Remove(transferAction.TransferCard);
+            Table.NotCoveredCards.Add(transferAction.TransferCard);
+            Table.OpenedCards.Add(transferAction.TransferCard);
         }
 
         private bool AddNeighbour(IPlayer player)
@@ -158,6 +143,7 @@ namespace Logic
         
         private void Defend(DefendAction defendActions)
         {
+            defendActions.Player.Hand.RemoveAll(c => defendActions.CardsPairs.Select(def => def.DefendCard).Contains(c));
             Table.OpenedCards.AddRange(defendActions.CardsPairs.Select(cp => cp.DefendCard));
             Table.NotCoveredCards = new List<Card>();
         }
@@ -176,6 +162,10 @@ namespace Logic
             RestoreCardsToPlayer(ActivePlayer);
             RestoreCardsToPlayer(NeighbourPlayer);
             RestoreCardsToPlayer(PassivePlayer);
+            foreach (var player in Players.Where(p => p.Id != ActivePlayer.Id && p.Id != NeighbourPlayer.Id && p.Id != PassivePlayer.Id))
+            {
+                RestoreCardsToPlayer(player);
+            }
         }
 
         private void RestoreCardsToPlayer(IPlayer player)
@@ -186,6 +176,27 @@ namespace Logic
             {
                 player.Hand.Add(Table.Deck.Dequeue());
             }
+        }
+
+        private bool CheckGameOver()
+        {
+            if (Table.Deck.Count == 0)
+            {
+                foreach (var player in Players)
+                {
+                    if (player.Hand.Count == 0)
+                    {
+                        player.WinAction();
+                        Players.Remove(player);
+                    }
+                }
+            }
+            if (Players.Count == 1)
+            {
+                Players[0].LoseAction();
+                return true;
+            }
+            return false;
         }
     }
 }

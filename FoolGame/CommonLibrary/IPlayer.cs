@@ -11,5 +11,9 @@ namespace CommonLibrary
 
         AttackAction Attack();
 
+        void WinAction();
+
+        void LoseAction();
+
     }
 }

@@ -18,7 +18,6 @@ namespace CommonLibrary
                 (cardsPair.DefendCard.Suit == Table.Trump && cardsPair.AttackCard.Suit != Table.Trump))
             {
                 CardsPairs.Add(cardsPair);
-                Player.Hand.Remove(cardsPair.DefendCard);
                 return true;
             }
             return false;
