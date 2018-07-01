@@ -12,15 +12,9 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
-            var players = new List<IPlayer>();
-            for (int i = 0; i < 4; i++)
-            {
-                players.Add(new ConsolePlayer(i+1));
-            }
-            var gameManager = new GameManager();
-            gameManager.Init(players);
+            var startManager = new StartManager(new ConsolePlayerCreator());
+            startManager.Start();
             WriteInfo();
-            gameManager.GameProcess();
         }
 
         static void WriteInfo()
