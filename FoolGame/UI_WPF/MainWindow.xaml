@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UI_WPF"
         mc:Ignorable="d"
+        DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -17,20 +18,6 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <ListView Grid.Column="1"
-                  Grid.Row="2"
-                  ItemsSource="{Binding CurrentPlayer.Hand}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Width="100"
-                          Height="150">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Nominal}"/>
-                            <TextBlock Text="{Binding Suit}"/>
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+        <Button Command="{Binding OpenPlayerViewCommand}"></Button>
     </Grid>
 </Window>

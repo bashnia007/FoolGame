@@ -1,6 +1,6 @@
 ﻿using CommonLibrary;
 using Logic;
-using UI_WPF.Model;
+using UI_WPF.Models;
 
 namespace UI_WPF.Helpers
 {
@@ -8,7 +8,7 @@ namespace UI_WPF.Helpers
     {
         public override IPlayer CreatePlayer(int id)
         {
-            return new DesktopPlayer();
+            return new DesktopPlayer(id);
         }
     }
 }

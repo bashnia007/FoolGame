@@ -15,6 +15,7 @@
 using CommonServiceLocator;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
+using UI_WPF.Models;
 
 namespace UI_WPF.ViewModel
 {
@@ -43,9 +44,10 @@ namespace UI_WPF.ViewModel
             ////}
 
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<PlayerViewModel>();
         }
 
-        public MainViewModel Main
+        public MainViewModel Main   
         {
             get
             {

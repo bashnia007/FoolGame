@@ -10,20 +10,28 @@ namespace Logic
     public class StartManager
     {
         private readonly PlayerCreator _creator;
+        private GameManager _gameManager;
+        public List<IPlayer> Players;
         public StartManager(PlayerCreator creator)
         {
             _creator = creator;
         }
-        public void Start()
+
+        public void Init()
         {
             var players = new List<IPlayer>();
             for (int i = 0; i < 4; i++)
             {
                 players.Add(_creator.CreatePlayer(i));
             }
-            var gameManager = new GameManager();
-            gameManager.Init(players);
-            gameManager.GameProcess();
+            _gameManager = new GameManager();
+            _gameManager.Init(players);
+
+            Players = _gameManager.Players;
+        }
+        public void Start()
+        {
+            _gameManager.GameProcess();
         }
     }
 }
